@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Parents Teacher Meeting System</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
+}
+
+.container{
+width:700px;
+margin:auto;
+margin-top:40px;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0px 0px 10px gray;
+}
+
+input{
+padding:10px;
+width:260px;
+font-size:16px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+button{
+padding:10px 15px;
+font-size:15px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+table{
+margin:auto;
+margin-top:20px;
+border-collapse:collapse;
+width:80%;
+}
+
+td{
+padding:10px;
+border:1px solid #ccc;
+}
+
+.good{
+color:green;
+font-weight:bold;
+}
+
+.avg{
+color:orange;
+font-weight:bold;
+}
+
+.poor{
+color:red;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Parents Teacher Meeting System</h2>
+
+<br>
+
+<input type="text" id="search" placeholder="Enter Roll No / Name" autocomplete="off">
+
+<button onclick="searchStudent()">Search</button>
+
+<button onclick="printReport()">Print</button>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+let students=[];
+
+/* Load CSV automatically */
+
+fetch("students.csv")
+.then(response=>response.text())
+.then(data=>{
+
+let rows=data.split("\n");
+
+for(let i=1;i<rows.length;i++){
+
+if(rows[i].trim()=="") continue;
+
+let cols=rows[i].split(",");
+
+students.push({
+
+roll:cols[0].trim(),
+name:cols[1].trim(),
+mobile:cols[2].trim(),
+studies:cols[3].trim(),
+behaviour:cols[4].trim(),
+attendance:cols[5].trim()
+
+});
+
+}
+
+console.log("Students Loaded:",students);
+
+});
+
+/* Color indicator */
+
+function gradeColor(val){
+
+if(!val) return "";
+
+val=String(val).toLowerCase();
+
+if(val.includes("good")) return "good";
+
+if(val.includes("average")) return "avg";
+
+if(val.includes("poor")) return "poor";
+
+return "";
+
+}
+
+/* Search student */
+
+function searchStudent(){
+
+let key=document.getElementById("search").value.toLowerCase();
+
+let student=students.find(s=>
+
+s.roll.toLowerCase().includes(key) ||
+
+s.name.toLowerCase().includes(key)
+
+);
+
+if(student){
+
+document.getElementById("result").innerHTML=
+
+`
+<table>
+
+<tr>
+<td><b>Roll No</b></td>
+<td>${student.roll}</td>
+</tr>
+
+<tr>
+<td><b>Name</b></td>
+<td>${student.name}</td>
+</tr>
+
+<tr>
+<td><b>Mobile</b></td>
+<td>${student.mobile}</td>
+</tr>
+
+<tr>
+<td><b>Studies</b></td>
+<td class="${gradeColor(student.studies)}">${student.studies}</td>
+</tr>
+
+<tr>
+<td><b>Behaviour</b></td>
+<td class="${gradeColor(student.behaviour)}">${student.behaviour}</td>
+</tr>
+
+<tr>
+<td><b>Attendance</b></td>
+<td>${student.attendance}</td>
+</tr>
+
+</table>
+`;
+
+}
+
+else{
+
+document.getElementById("result").innerHTML="<h3 style='color:red'>Student Not Found</h3>";
+
+}
+
+}
+
+/* Print report */
+
+function printReport(){
+
+window.print();
+
+}
+
+</script>
+
+</body>
+</html>
